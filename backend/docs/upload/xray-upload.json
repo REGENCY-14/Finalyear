@@ -1,0 +1,235 @@
+{
+  "post": {
+    "tags": ["X-ray Images"],
+    "summary": "Upload X-ray image",
+    "description": "Upload an X-ray image for a patient. The image will be stored in Supabase Storage and metadata will be saved in the database. Only accessible to authenticated medical personnel.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "multipart/form-data": {
+          "schema": {
+            "type": "object",
+            "required": ["patient_id", "image", "image_type"],
+            "properties": {
+              "patient_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID of the patient",
+                "example": "123e4567-e89b-12d3-a456-426614174000"
+              },
+              "image": {
+                "type": "string",
+                "format": "binary",
+                "description": "X-ray image file (JPEG, PNG, JPG). Maximum size: 10MB"
+              },
+              "image_type": {
+                "type": "string",
+                "enum": ["chest", "abdomen", "spine", "limb", "head", "other"],
+                "description": "Type of X-ray image",
+                "example": "chest"
+              },
+              "body_part": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Specific body part imaged (optional)",
+                "example": "Left lung, anterior view"
+              },
+              "clinical_notes": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Clinical notes about the X-ray (optional)",
+                "example": "Patient presents with chest pain. X-ray shows possible pneumonia in left lower lobe."
+              },
+              "examination_date": {
+                "type": "string",
+                "format": "date",
+                "description": "Date when the X-ray was taken (optional, defaults to current date)",
+                "example": "2024-01-15"
+              },
+              "technique": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "X-ray technique used (optional)",
+                "example": "PA chest, 120kVp, 2.5mAs"
+              },
+              "findings": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Radiological findings (optional)",
+                "example": "Normal cardiac silhouette. Clear lung fields. No evidence of pneumothorax or pleural effusion."
+              },
+              "impression": {
+                "type": "string",
+                "maxLength": 500,
+                "description": "Radiologist's impression (optional)",
+                "example": "Normal chest X-ray"
+              }
+            }
+          },
+          "examples": {
+            "chest_xray": {
+              "summary": "Chest X-ray upload",
+              "value": {
+                "patient_id": "123e4567-e89b-12d3-a456-426614174000",
+                "image_type": "chest",
+                "body_part": "Chest, PA view",
+                "clinical_notes": "Patient with chest pain and shortness of breath",
+                "examination_date": "2024-01-15",
+                "technique": "PA chest, 120kVp, 2.5mAs",
+                "findings": "Normal cardiac silhouette. Clear lung fields.",
+                "impression": "Normal chest X-ray"
+              }
+            },
+            "abdominal_xray": {
+              "summary": "Abdominal X-ray upload",
+              "value": {
+                "patient_id": "456e7890-e89b-12d3-a456-426614174000",
+                "image_type": "abdomen",
+                "body_part": "Abdomen, supine view",
+                "clinical_notes": "Patient with abdominal pain and distension",
+                "examination_date": "2024-01-15",
+                "technique": "AP abdomen, 80kVp, 20mAs",
+                "findings": "Normal bowel gas pattern. No evidence of obstruction.",
+                "impression": "Normal abdominal X-ray"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "X-ray image uploaded successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "X-ray image uploaded successfully"
+                },
+                "xray": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "abc12345-e89b-12d3-a456-426614174000"
+                    },
+                    "patient_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "image_url": {
+                      "type": "string",
+                      "description": "URL to access the uploaded image",
+                      "example": "https://supabase.co/storage/v1/object/public/xray-images/abc12345-e89b-12d3-a456-426614174000.jpg"
+                    },
+                    "image_type": {
+                      "type": "string",
+                      "example": "chest"
+                    },
+                    "body_part": {
+                      "type": "string",
+                      "example": "Left lung, anterior view"
+                    },
+                    "file_size": {
+                      "type": "integer",
+                      "description": "File size in bytes",
+                      "example": 2048576
+                    },
+                    "file_type": {
+                      "type": "string",
+                      "example": "image/jpeg"
+                    },
+                    "created_by": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "456e7890-e89b-12d3-a456-426614174000"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T10:30:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Validation error or invalid file",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - Invalid or missing token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Patient not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "413": {
+        "description": "File too large",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "415": {
+        "description": "Unsupported file type",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

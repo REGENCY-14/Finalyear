@@ -1,0 +1,521 @@
+{
+  "post": {
+    "tags": ["Symptoms"],
+    "summary": "Record patient symptoms",
+    "description": "Record multiple symptoms for a patient in a single session. Only accessible to authenticated medical personnel.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["patient_id", "symptoms"],
+            "properties": {
+              "patient_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "ID of the patient",
+                "example": "123e4567-e89b-12d3-a456-426614174000"
+              },
+              "session_notes": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "General notes about the symptom session (optional)",
+                "example": "Patient reports symptoms started 2 days ago after eating seafood."
+              },
+              "symptoms": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["name", "severity", "duration"],
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 100,
+                      "description": "Name of the symptom",
+                      "example": "Chest pain"
+                    },
+                    "severity": {
+                      "type": "string",
+                      "enum": ["mild", "moderate", "severe"],
+                      "description": "Severity level of the symptom",
+                      "example": "moderate"
+                    },
+                    "duration": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "description": "How long the symptom has been present",
+                      "example": "2 days"
+                    },
+                    "description": {
+                      "type": "string",
+                      "maxLength": 500,
+                      "description": "Detailed description of the symptom (optional)",
+                      "example": "Sharp pain in the center of chest, worse with deep breathing"
+                    },
+                    "body_location": {
+                      "type": "string",
+                      "maxLength": 100,
+                      "description": "Specific body location (optional)",
+                      "example": "Center chest, radiating to left arm"
+                    },
+                    "triggers": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "description": "What triggers or worsens the symptom (optional)",
+                      "example": "Deep breathing, physical activity"
+                    },
+                    "relieving_factors": {
+                      "type": "string",
+                      "maxLength": 200,
+                      "description": "What relieves the symptom (optional)",
+                      "example": "Rest, sitting upright"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "examples": {
+            "chest_pain": {
+              "summary": "Chest pain symptoms",
+              "value": {
+                "patient_id": "123e4567-e89b-12d3-a456-426614174000",
+                "session_notes": "Patient reports chest pain and shortness of breath started 2 days ago.",
+                "symptoms": [
+                  {
+                    "name": "Chest pain",
+                    "severity": "moderate",
+                    "duration": "2 days",
+                    "description": "Sharp pain in the center of chest, worse with deep breathing",
+                    "body_location": "Center chest, radiating to left arm",
+                    "triggers": "Deep breathing, physical activity",
+                    "relieving_factors": "Rest, sitting upright"
+                  },
+                  {
+                    "name": "Shortness of breath",
+                    "severity": "mild",
+                    "duration": "2 days",
+                    "description": "Difficulty breathing, especially during physical activity",
+                    "body_location": "General",
+                    "triggers": "Physical activity, lying flat",
+                    "relieving_factors": "Sitting upright, rest"
+                  }
+                ]
+              }
+            },
+            "fever": {
+              "summary": "Fever and flu symptoms",
+              "value": {
+                "patient_id": "456e7890-e89b-12d3-a456-426614174000",
+                "session_notes": "Patient presents with flu-like symptoms for the past week.",
+                "symptoms": [
+                  {
+                    "name": "Fever",
+                    "severity": "moderate",
+                    "duration": "5 days",
+                    "description": "Temperature ranging from 100.4°F to 102.2°F",
+                    "body_location": "General",
+                    "triggers": "Evening hours",
+                    "relieving_factors": "Acetaminophen, cool compress"
+                  },
+                  {
+                    "name": "Fatigue",
+                    "severity": "severe",
+                    "duration": "7 days",
+                    "description": "Extreme tiredness, difficulty staying awake",
+                    "body_location": "General",
+                    "triggers": "Any physical activity",
+                    "relieving_factors": "Rest, sleep"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "Symptoms recorded successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Symptoms recorded successfully"
+                },
+                "session": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "789e0123-e89b-12d3-a456-426614174000"
+                    },
+                    "patient_id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "created_by": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "456e7890-e89b-12d3-a456-426614174000"
+                    },
+                    "session_notes": {
+                      "type": "string",
+                      "example": "Patient reports symptoms started 2 days ago after eating seafood."
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T10:30:00Z"
+                    }
+                  }
+                },
+                "symptoms": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "abc12345-e89b-12d3-a456-426614174000"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Chest pain"
+                      },
+                      "severity": {
+                        "type": "string",
+                        "example": "moderate"
+                      },
+                      "duration": {
+                        "type": "string",
+                        "example": "2 days"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - Invalid or missing token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Patient not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "get": {
+    "tags": ["Symptoms"],
+    "summary": "Get all symptoms",
+    "description": "Retrieve a paginated list of all symptoms with optional filtering. Only accessible to authenticated medical personnel.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "parameters": [
+      {
+        "name": "page",
+        "in": "query",
+        "description": "Page number for pagination",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        },
+        "example": 1
+      },
+      {
+        "name": "limit",
+        "in": "query",
+        "description": "Number of symptoms per page",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        },
+        "example": 20
+      },
+      {
+        "name": "patient_id",
+        "in": "query",
+        "description": "Filter by patient ID",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "123e4567-e89b-12d3-a456-426614174000"
+      },
+      {
+        "name": "severity",
+        "in": "query",
+        "description": "Filter by symptom severity",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": ["mild", "moderate", "severe"]
+        },
+        "example": "moderate"
+      },
+      {
+        "name": "search",
+        "in": "query",
+        "description": "Search term for symptom name",
+        "required": false,
+        "schema": {
+          "type": "string"
+        },
+        "example": "chest pain"
+      },
+      {
+        "name": "sortBy",
+        "in": "query",
+        "description": "Sort field",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": ["created_at", "name", "severity"],
+          "default": "created_at"
+        },
+        "example": "created_at"
+      },
+      {
+        "name": "sortOrder",
+        "in": "query",
+        "description": "Sort order",
+        "required": false,
+        "schema": {
+          "type": "string",
+          "enum": ["asc", "desc"],
+          "default": "desc"
+        },
+        "example": "desc"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Symptoms retrieved successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "symptoms": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "abc12345-e89b-12d3-a456-426614174000"
+                      },
+                      "name": {
+                        "type": "string",
+                        "example": "Chest pain"
+                      },
+                      "severity": {
+                        "type": "string",
+                        "example": "moderate"
+                      },
+                      "duration": {
+                        "type": "string",
+                        "example": "2 days"
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Sharp pain in the center of chest, worse with deep breathing"
+                      },
+                      "body_location": {
+                        "type": "string",
+                        "example": "Center chest, radiating to left arm"
+                      },
+                      "patient": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                          },
+                          "first_name": {
+                            "type": "string",
+                            "example": "Jane"
+                          },
+                          "last_name": {
+                            "type": "string",
+                            "example": "Doe"
+                          }
+                        }
+                      },
+                      "session": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "789e0123-e89b-12d3-a456-426614174000"
+                          },
+                          "session_notes": {
+                            "type": "string",
+                            "example": "Patient reports symptoms started 2 days ago after eating seafood."
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-01-15T10:30:00Z"
+                          }
+                        }
+                      },
+                      "created_by": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "format": "uuid",
+                            "example": "456e7890-e89b-12d3-a456-426614174000"
+                          },
+                          "first_name": {
+                            "type": "string",
+                            "example": "John"
+                          },
+                          "last_name": {
+                            "type": "string",
+                            "example": "Smith"
+                          },
+                          "role": {
+                            "type": "string",
+                            "example": "doctor"
+                          }
+                        }
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00Z"
+                      }
+                    }
+                  }
+                },
+                "pagination": {
+                  "type": "object",
+                  "properties": {
+                    "page": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "limit": {
+                      "type": "integer",
+                      "example": 20
+                    },
+                    "total": {
+                      "type": "integer",
+                      "example": 75
+                    },
+                    "pages": {
+                      "type": "integer",
+                      "example": 4
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - Invalid or missing token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

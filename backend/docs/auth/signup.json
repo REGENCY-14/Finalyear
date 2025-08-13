@@ -1,0 +1,199 @@
+{
+  "post": {
+    "tags": ["Authentication"],
+    "summary": "Register new medical personnel",
+    "description": "Create a new account for medical personnel (doctors, nurses, radiologists, admins). Only accessible to authenticated admin users.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["email", "password", "first_name", "last_name", "role", "license_number"],
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Professional email address",
+                "example": "dr.smith@hospital.com"
+              },
+              "password": {
+                "type": "string",
+                "minLength": 8,
+                "description": "Password (minimum 8 characters)",
+                "example": "securePassword123"
+              },
+              "first_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 50,
+                "description": "First name",
+                "example": "John"
+              },
+              "last_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 50,
+                "description": "Last name",
+                "example": "Smith"
+              },
+              "role": {
+                "type": "string",
+                "enum": ["doctor", "nurse", "radiologist", "admin"],
+                "description": "Medical personnel role",
+                "example": "doctor"
+              },
+              "license_number": {
+                "type": "string",
+                "minLength": 5,
+                "maxLength": 20,
+                "description": "Professional license number",
+                "example": "MD12345"
+              },
+              "specialization": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "Medical specialization (optional)",
+                "example": "Cardiology"
+              },
+              "phone": {
+                "type": "string",
+                "maxLength": 20,
+                "description": "Contact phone number (optional)",
+                "example": "+1234567890"
+              }
+            }
+          },
+          "examples": {
+            "doctor": {
+              "summary": "Doctor registration",
+              "value": {
+                "email": "dr.smith@hospital.com",
+                "password": "securePassword123",
+                "first_name": "John",
+                "last_name": "Smith",
+                "role": "doctor",
+                "license_number": "MD12345",
+                "specialization": "Cardiology",
+                "phone": "+1234567890"
+              }
+            },
+            "nurse": {
+              "summary": "Nurse registration",
+              "value": {
+                "email": "nurse.jones@hospital.com",
+                "password": "securePassword123",
+                "first_name": "Sarah",
+                "last_name": "Jones",
+                "role": "nurse",
+                "license_number": "RN67890"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "201": {
+        "description": "User created successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "User created successfully"
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "dr.smith@hospital.com"
+                    },
+                    "first_name": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "example": "Smith"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "doctor"
+                    },
+                    "license_number": {
+                      "type": "string",
+                      "example": "MD12345"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T10:30:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Validation error or user already exists",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - Invalid or missing token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden - Insufficient permissions (admin role required)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

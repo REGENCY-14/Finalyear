@@ -1,0 +1,148 @@
+{
+  "post": {
+    "tags": ["Authentication"],
+    "summary": "Authenticate medical personnel",
+    "description": "Sign in with email and password to receive a JWT token for accessing protected endpoints.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["email", "password"],
+            "properties": {
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Professional email address",
+                "example": "dr.smith@hospital.com"
+              },
+              "password": {
+                "type": "string",
+                "description": "Account password",
+                "example": "securePassword123"
+              }
+            }
+          },
+          "examples": {
+            "doctor": {
+              "summary": "Doctor signin",
+              "value": {
+                "email": "dr.smith@hospital.com",
+                "password": "securePassword123"
+              }
+            },
+            "nurse": {
+              "summary": "Nurse signin",
+              "value": {
+                "email": "nurse.jones@hospital.com",
+                "password": "securePassword123"
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Authentication successful",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Authentication successful"
+                },
+                "token": {
+                  "type": "string",
+                  "description": "JWT token for accessing protected endpoints",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                "refreshToken": {
+                  "type": "string",
+                  "description": "Refresh token for generating new access tokens",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                "user": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "dr.smith@hospital.com"
+                    },
+                    "first_name": {
+                      "type": "string",
+                      "example": "John"
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "example": "Smith"
+                    },
+                    "role": {
+                      "type": "string",
+                      "example": "doctor"
+                    },
+                    "license_number": {
+                      "type": "string",
+                      "example": "MD12345"
+                    },
+                    "specialization": {
+                      "type": "string",
+                      "example": "Cardiology"
+                    },
+                    "last_login": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T10:30:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Invalid credentials",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "post": {
+    "tags": ["Authentication"],
+    "summary": "Refresh access token",
+    "description": "Generate a new access token using a valid refresh token.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "required": ["refreshToken"],
+            "properties": {
+              "refreshToken": {
+                "type": "string",
+                "description": "Valid refresh token",
+                "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              }
+            }
+          },
+          "examples": {
+            "refresh": {
+              "summary": "Refresh token request",
+              "value": {
+                "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Token refreshed successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Token refreshed successfully"
+                },
+                "token": {
+                  "type": "string",
+                  "description": "New JWT access token",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                },
+                "refreshToken": {
+                  "type": "string",
+                  "description": "New refresh token",
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Invalid or expired refresh token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

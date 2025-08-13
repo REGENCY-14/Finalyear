@@ -1,0 +1,449 @@
+{
+  "get": {
+    "tags": ["Patients"],
+    "summary": "Get patient by ID",
+    "description": "Retrieve a specific patient by their ID. Only accessible to authenticated medical personnel.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Patient ID",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "123e4567-e89b-12d3-a456-426614174000"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Patient retrieved successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "patient": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "first_name": {
+                      "type": "string",
+                      "example": "Jane"
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "example": "Doe"
+                    },
+                    "date_of_birth": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "1990-05-15"
+                    },
+                    "gender": {
+                      "type": "string",
+                      "example": "female"
+                    },
+                    "phone": {
+                      "type": "string",
+                      "example": "+1234567890"
+                    },
+                    "email": {
+                      "type": "string",
+                      "example": "jane.doe@email.com"
+                    },
+                    "address": {
+                      "type": "string",
+                      "example": "123 Main St, City, State 12345"
+                    },
+                    "emergency_contact": {
+                      "type": "string",
+                      "example": "John Doe (Spouse) - +1987654321"
+                    },
+                    "medical_history": {
+                      "type": "string",
+                      "example": "No known allergies. Previous surgery: Appendectomy in 2015."
+                    },
+                    "created_by": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid",
+                          "example": "456e7890-e89b-12d3-a456-426614174000"
+                        },
+                        "first_name": {
+                          "type": "string",
+                          "example": "John"
+                        },
+                        "last_name": {
+                          "type": "string",
+                          "example": "Smith"
+                        },
+                        "role": {
+                          "type": "string",
+                          "example": "doctor"
+                        }
+                      }
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T10:30:00Z"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T10:30:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid patient ID format",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - Invalid or missing token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Patient not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "put": {
+    "tags": ["Patients"],
+    "summary": "Update patient",
+    "description": "Update an existing patient's information. Only accessible to authenticated medical personnel.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Patient ID",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "123e4567-e89b-12d3-a456-426614174000"
+      }
+    ],
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "first_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 50,
+                "description": "Patient's first name",
+                "example": "Jane"
+              },
+              "last_name": {
+                "type": "string",
+                "minLength": 2,
+                "maxLength": 50,
+                "description": "Patient's last name",
+                "example": "Doe"
+              },
+              "date_of_birth": {
+                "type": "string",
+                "format": "date",
+                "description": "Patient's date of birth (YYYY-MM-DD)",
+                "example": "1990-05-15"
+              },
+              "gender": {
+                "type": "string",
+                "enum": ["male", "female", "other"],
+                "description": "Patient's gender",
+                "example": "female"
+              },
+              "phone": {
+                "type": "string",
+                "maxLength": 20,
+                "description": "Patient's phone number",
+                "example": "+1234567890"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Patient's email address",
+                "example": "jane.doe@email.com"
+              },
+              "address": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "Patient's address",
+                "example": "123 Main St, City, State 12345"
+              },
+              "emergency_contact": {
+                "type": "string",
+                "maxLength": 200,
+                "description": "Emergency contact information",
+                "example": "John Doe (Spouse) - +1987654321"
+              },
+              "medical_history": {
+                "type": "string",
+                "maxLength": 1000,
+                "description": "Brief medical history notes",
+                "example": "No known allergies. Previous surgery: Appendectomy in 2015."
+              }
+            }
+          },
+          "examples": {
+            "update_contact": {
+              "summary": "Update contact information",
+              "value": {
+                "phone": "+1987654321",
+                "email": "jane.doe.new@email.com",
+                "address": "456 Oak Ave, City, State 54321"
+              }
+            },
+            "update_medical_history": {
+              "summary": "Update medical history",
+              "value": {
+                "medical_history": "No known allergies. Previous surgery: Appendectomy in 2015. Diagnosed with hypertension in 2023."
+              }
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "200": {
+        "description": "Patient updated successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Patient updated successfully"
+                },
+                "patient": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid",
+                      "example": "123e4567-e89b-12d3-a456-426614174000"
+                    },
+                    "first_name": {
+                      "type": "string",
+                      "example": "Jane"
+                    },
+                    "last_name": {
+                      "type": "string",
+                      "example": "Doe"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2024-01-15T11:30:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Validation error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - Invalid or missing token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Patient not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "delete": {
+    "tags": ["Patients"],
+    "summary": "Delete patient (soft delete)",
+    "description": "Soft delete a patient record. This action is only available to admin users. The patient record will be marked as deleted but not permanently removed from the database.",
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "parameters": [
+      {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "description": "Patient ID",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "example": "123e4567-e89b-12d3-a456-426614174000"
+      }
+    ],
+    "responses": {
+      "200": {
+        "description": "Patient deleted successfully",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "properties": {
+                "success": {
+                  "type": "boolean",
+                  "example": true
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Patient deleted successfully"
+                }
+              }
+            }
+          }
+        }
+      },
+      "400": {
+        "description": "Invalid patient ID format",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "401": {
+        "description": "Unauthorized - Invalid or missing token",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "Forbidden - Admin role required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Patient not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "../swagger.json#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

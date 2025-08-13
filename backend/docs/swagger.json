@@ -1,0 +1,150 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Medical Diagnosis Backend API",
+    "description": "Backend API for medical diagnosis application used exclusively by medical personnel. Provides authentication, patient management, symptom tracking, and X-ray image upload capabilities.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Medical Diagnosis API Support",
+      "email": "support@medicaldiagnosis.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api",
+      "description": "Development server"
+    },
+    {
+      "url": "https://your-production-domain.com/api",
+      "description": "Production server"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "User authentication and authorization endpoints"
+    },
+    {
+      "name": "Patients",
+      "description": "Patient record management endpoints"
+    },
+    {
+      "name": "Symptoms",
+      "description": "Patient symptom tracking and management endpoints"
+    },
+    {
+      "name": "X-ray Images",
+      "description": "X-ray image upload and management endpoints"
+    }
+  ],
+  "paths": {
+    "/auth/signup": {
+      "$ref": "./auth/signup.json"
+    },
+    "/auth/signin": {
+      "$ref": "./auth/signin.json"
+    },
+    "/auth/profile": {
+      "$ref": "./auth/profile.json"
+    },
+    "/auth/refresh": {
+      "$ref": "./auth/refresh.json"
+    },
+    "/auth/logout": {
+      "$ref": "./auth/logout.json"
+    },
+    "/patients": {
+      "$ref": "./patients/patients.json"
+    },
+    "/patients/{id}": {
+      "$ref": "./patients/patient-by-id.json"
+    },
+    "/patients/stats/overview": {
+      "$ref": "./patients/patient-stats.json"
+    },
+    "/symptoms": {
+      "$ref": "./symptoms/symptoms.json"
+    },
+    "/symptoms/patient/{patientId}": {
+      "$ref": "./symptoms/symptoms-by-patient.json"
+    },
+    "/symptoms/{id}": {
+      "$ref": "./symptoms/symptom-by-id.json"
+    },
+    "/symptoms/stats/overview": {
+      "$ref": "./symptoms/symptom-stats.json"
+    },
+    "/upload/xray": {
+      "$ref": "./upload/xray-upload.json"
+    },
+    "/upload/xray/patient/{patientId}": {
+      "$ref": "./upload/xray-by-patient.json"
+    },
+    "/upload/xray/{id}": {
+      "$ref": "./upload/xray-by-id.json"
+    },
+    "/upload/stats/overview": {
+      "$ref": "./upload/upload-stats.json"
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtained from /auth/signin endpoint"
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Error message"
+          },
+          "status": {
+            "type": "integer",
+            "description": "HTTP status code"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when error occurred"
+          }
+        }
+      },
+      "ValidationError": {
+        "type": "object",
+        "properties": {
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "description": "Field name that failed validation"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Validation error message"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ]
+}
